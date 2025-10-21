@@ -73,11 +73,11 @@ public class ThreadChain {
 
 
     public static void main(String[] args) {
-        ThreadChain chain = new ThreadChain();
-
-        Block currentBlock = new Block(0,
-                blockchain.size()==0?"0":blockchain.get(blockchain.size()-1).hash,
-                "Miners testing");
-        Thread miner1 = new ChainThread("miner1",currentBlock);
+//        ThreadChain chain = new ThreadChain();
+//
+//        Block currentBlock = new Block(0,
+//                blockchain.size()==0?"0":blockchain.get(blockchain.size()-1).hash,
+//                "Miners testing");
+//        Thread miner1 = new ChainThread("miner1",currentBlock);
     }
 }

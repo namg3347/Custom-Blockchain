@@ -14,7 +14,7 @@ public class Transaction {
     public float value;
     public byte[] signature;
 
-    public ArrayList<TransactionInput> inputs = new ArrayList<>();
+    public ArrayList<TransactionInput> inputs;
     public ArrayList<TransactionOutput> outputs = new ArrayList<>();
 
     private static int sequence =0;
@@ -24,6 +24,7 @@ public class Transaction {
         this.reciepient = to;
         this.value = value;
         this.inputs = inputs;
+        this.transactionId = calculateHash();
     }
 
     public boolean processTransaction() {
@@ -33,11 +34,11 @@ public class Transaction {
             System.out.println("Signature verification failed");
             return false;
         }
-        //copy all the utxo to current inputs
+        //copy all the utxo to current inputs' transactionOutput utxo using the id of transaction output
         for(TransactionInput i : inputs) {
             i.UTXO = CustomChain.UTXOs.get(i.transactionOutputId);
         }
-        //if total in utxo is less the minimum transaction limit of the chain
+        //if total in sender's utxo is less the minimum transaction limit of the chain
         if(getInputsValue() < CustomChain.minimumTransaction) {
             System.out.println("#Transaction Inputs to small: " + getInputsValue());
             return false;
@@ -65,18 +66,18 @@ public class Transaction {
 
     public void generateSignature(PrivateKey privateKey)
     {
-        String data = StringUtil.getStringFromKey(sender)+StringUtil.getStringFromKey(reciepient) + Float.toString(value) + sequence;
+        String data = StringUtil.getStringFromKey(sender)+StringUtil.getStringFromKey(reciepient) + Float.toString(value);
         signature = StringUtil.eccSign(privateKey, data);
     }
 
     public boolean verifySignature()
     {
-        String data = StringUtil.getStringFromKey(sender)+StringUtil.getStringFromKey(reciepient) + Float.toString(value) + sequence;
+        String data = StringUtil.getStringFromKey(sender)+StringUtil.getStringFromKey(reciepient) + Float.toString(value);
         return StringUtil.verifyECDSASig(sender, data, signature);
     }
 
     //calculate hash of the transaction to store as id
-    private String calulateHash() {
+    private String calculateHash() {
         sequence++;
         return StringUtil.sha256(
                 StringUtil.getStringFromKey(sender) +
